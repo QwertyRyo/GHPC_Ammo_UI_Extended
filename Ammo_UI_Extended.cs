@@ -3,7 +3,10 @@ using HarmonyLib;
 using UnityEngine;
 using GHPC.Weapons;
 using GHPC.UI.Hud;
+using GHPC.Player;
+using GHPC.Crew;
 using System.Reflection;
+using System.Text;
 
 [assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.1.0", "Qwertyryo")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
@@ -142,4 +145,61 @@ namespace AmmoDisplayMod
             return false;
         }
     }
+    [HarmonyPatch(typeof(GHPC.Player.PlayerInput), "Update")]
+    public static class RestockMessageAmmoPatch
+    {
+        static void Postfix(GHPC.Player.PlayerInput __instance)
+        {
+            if (!__instance.IsInitialized) return;
+            CrewBrainWeaponsModule weaponsModule = __instance.CurrentPlayerCrewBrain.WeaponsModule;
+            if (__instance.CurrentPlayerCrewBrain == null) return;
+            if (weaponsModule?.ActiveWeapon == null) return;
+            if (__instance._loadoutManager != null && __instance._loadoutManager.Weapon == weaponsModule.ActiveWeapon.Weapon && !__instance.CurrentPlayerUnit.Neutralized && weaponsModule.ActiveWeapon.Weapon.CurrentClipRemainingCount == 0 && !weaponsModule.ActiveWeapon.Weapon.Feed.Reloading && !__instance._loadoutManager.IsRestocking)
+            {
+                if (weaponsModule.ActiveWeapon.Weapon.Feed.ReadyToReload)
+                {
+                    int ammoCountsLength = __instance._loadoutManager.TotalAmmoCounts.Length;
+                    string[] ammoNames = new string[ammoCountsLength];
+                    int[] readyRackCounts = new int[ammoCountsLength];
+                    int[] totalCounts = new int[ammoCountsLength];
+                    for (int i = 0; i < ammoCountsLength; i++)
+                    {
+                        AmmoType.AmmoClip clip = __instance._loadoutManager.GetAmmoClipTypeByIndex(i);
+                        ammoNames[i] = clip.Name;
+                        readyRackCounts[i] = __instance._loadoutManager.RackLoadouts[0].Rack.GetCurrentStoredAmmoCount(clip);
+                        totalCounts[i] = __instance._loadoutManager.GetCurrentAmmoCount(i);
+                        totalCounts[i] -= readyRackCounts[i];
+                    }
+                    StringBuilder sb = new StringBuilder("Reload or select a new ammunition type\n\n");
+                    for (int i = 0; i < ammoCountsLength; i++)
+                        sb.AppendLine(string.Format("{0}: {1} + {2}\n", ammoNames[i], readyRackCounts[i], totalCounts[i]));
+                    __instance.VehicleHudText.AddAlertMessage(sb.ToString(), 0.1f);
+
+                }
+                else if (__instance._loadoutManager.CanRestock)
+                {
+                    int ammoCountsLength = __instance._loadoutManager.TotalAmmoCounts.Length;
+                    string[] ammoNames = new string[ammoCountsLength];
+                    int[] readyRackCounts = new int[ammoCountsLength];
+                    int[] totalCounts = new int[ammoCountsLength];
+                    for (int i = 0; i < ammoCountsLength; i++)
+                    {
+                        AmmoType.AmmoClip clip = __instance._loadoutManager.GetAmmoClipTypeByIndex(i);
+                        ammoNames[i] = clip.Name;
+                        readyRackCounts[i] = __instance._loadoutManager.RackLoadouts[0].Rack.GetCurrentStoredAmmoCount(clip);
+                        totalCounts[i] = __instance._loadoutManager.GetCurrentAmmoCount(i);
+                    }
+                    StringBuilder sb = new StringBuilder("Select ammo (type 1-4) or Q to restock\n\n");
+                    for (int i = 0; i < ammoCountsLength; i++)
+                        sb.AppendLine(string.Format("{0}: {1} + {2}\n", ammoNames[i], readyRackCounts[i], totalCounts[i]));
+                    __instance.VehicleHudText.AddAlertMessage(sb.ToString(), 0.1f);
+                }
+                else if (!__instance._loadoutManager.AllRacksEmpty)
+                {
+                    __instance.VehicleHudText.AddAlertMessage("No ammunition available", 0.1f);
+                }
+            }
+        }
+    }
 }
+
