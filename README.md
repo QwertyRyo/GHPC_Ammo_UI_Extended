@@ -20,3 +20,4 @@ Programming: Qwertyryo
 **Changelog**  
 1.0.0 - Base release  
 1.1.0 - Added the ability to view the ready rack / reserve count of the queued shell type 
+1.2.0 - Added the ability to view all shell counts in ready/reserve racks when out of ammunition, or using manual reload
