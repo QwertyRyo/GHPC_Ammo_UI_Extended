@@ -7,7 +7,7 @@ Your ammo UI will now show (X+Y+Z), where X is the amount of rounds in your curr
 ***Installation***  
 This mod requires MelonLoader Version 0.6.1.
 
-To install, extract the "Ammo_UI_Extended.dll" file from releases and put it into the /mods folder. 
+To install, download the "Ammo_UI_Extended.dll" file from releases and put it into the /mods folder. 
 
 ***Acknowledgements***  
 Programming: Qwertyryo
