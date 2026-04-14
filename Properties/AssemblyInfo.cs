@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Ammo_UI_Extended")]
-[assembly: AssemblyDescription("A mod for GHPC that provides a 100% chance of all camo nets spawning on eligible vehicles")]
+[assembly: AssemblyDescription("A mod for GHPC adds the ability for players to check how much reserve ammo they have outside the ready rack.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Qwertyryo")]
 [assembly: AssemblyProduct("Ammo_UI_Extended")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5d3c618e-9e96-40be-b086-63906f6958a1")]
+[assembly: Guid("1a3d51b9-7481-4556-8805-8a7d15fd2f94")]
 
 // Version information for an assembly consists of the following four values:
 //
