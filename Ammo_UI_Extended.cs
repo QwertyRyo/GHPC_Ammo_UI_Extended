@@ -5,7 +5,7 @@ using GHPC.Weapons;
 using GHPC.UI.Hud;
 using System.Reflection;
 
-[assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.0.0", "Qwertyryo")]
+[assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.1.0", "Qwertyryo")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 
@@ -107,11 +107,22 @@ namespace AmmoDisplayMod
                 __instance._sb.Append(__instance.CurrentPlayerWeapon.FCS.DisplayRange);
             }
             if (flag2)
-            {
+            {   
                 AmmoType.AmmoClip queuedClipType = feed.QueuedClipType;
                 if (queuedClipType != null && !queuedClipType.Equals(feed.LoadedClipType))
                 {
-                    __instance._sb.Append("\nNext: " + queuedClipType.Name);
+                    FieldInfo loadoutManagerField = typeof(AmmoFeed).GetField("_loadoutManager", BindingFlags.NonPublic | BindingFlags.Instance);
+                    //For some reason, C# doesn't like me pre-defining this instance in its own if(flag2) earlier.
+                    LoadoutManager loadoutManager = loadoutManagerField?.GetValue(feed) as LoadoutManager;
+                    int totalAmmoOfQueuedType = loadoutManager.GetCurrentAmmoCount(queuedClipType);
+                    int queuedReadyRack = 0;
+                    foreach (AmmoType.AmmoClip clip in feed.ReadyRack.StoredClips)
+                    {
+                        if (clip.Equals(queuedClipType)) queuedReadyRack++;
+                    }
+                    queuedReadyRack *= queuedClipType.Capacity;
+                    int queuedStorage = totalAmmoOfQueuedType - queuedReadyRack;
+                    __instance._sb.Append("\nNext: " + queuedClipType.Name + " (" + queuedReadyRack + " + " + queuedStorage + ")\n");
                 }
                 if (feed.Reloading)
                 {
