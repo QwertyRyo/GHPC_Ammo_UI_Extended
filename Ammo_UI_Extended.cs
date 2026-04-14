@@ -5,10 +5,11 @@ using GHPC.Weapons;
 using GHPC.UI.Hud;
 using GHPC.Player;
 using GHPC.Crew;
+using GHPC.State;
 using System.Reflection;
 using System.Text;
-
-[assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.1.0", "Qwertyryo")]
+using GHPC;
+[assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.2.1", "Qwertyryo")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 
@@ -34,6 +35,9 @@ namespace AmmoDisplayMod
     {
         static bool Prefix(GHPC.UI.Hud.WeaponHud __instance)
         {
+            
+
+
             if (!__instance.IsInitialized)
             {
                 return true;
@@ -154,6 +158,7 @@ namespace AmmoDisplayMod
             CrewBrainWeaponsModule weaponsModule = __instance.CurrentPlayerCrewBrain.WeaponsModule;
             if (__instance.CurrentPlayerCrewBrain == null) return;
             if (weaponsModule?.ActiveWeapon == null) return;
+            if(AarController.InAar) return;
             if (__instance._loadoutManager != null && __instance._loadoutManager.Weapon == weaponsModule.ActiveWeapon.Weapon && !__instance.CurrentPlayerUnit.Neutralized && weaponsModule.ActiveWeapon.Weapon.CurrentClipRemainingCount == 0 && !weaponsModule.ActiveWeapon.Weapon.Feed.Reloading && !__instance._loadoutManager.IsRestocking)
             {
                 if (weaponsModule.ActiveWeapon.Weapon.Feed.ReadyToReload)
