@@ -25,3 +25,5 @@ Programming: Qwertyryo
 1.2.0 - Added the ability to view all shell counts in ready/reserve racks when out of ammunition, or using manual reload
 
 1.2.1 - Fixed bug where the shells UI would show up in AAR
+
+1.2.2 - Formatting fix, fixed "No ammunition" message not showing up.

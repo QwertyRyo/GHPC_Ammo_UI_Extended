@@ -9,7 +9,7 @@ using GHPC.State;
 using System.Reflection;
 using System.Text;
 using GHPC;
-[assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.2.1", "Qwertyryo")]
+[assembly: MelonInfo(typeof(AmmoDisplayMod.AmmoDisplayModClass), "Ammo UI Extended", "1.2.2", "Qwertyryo")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 
@@ -129,7 +129,7 @@ namespace AmmoDisplayMod
                     }
                     queuedReadyRack *= queuedClipType.Capacity;
                     int queuedStorage = totalAmmoOfQueuedType - queuedReadyRack;
-                    __instance._sb.Append("\nNext: " + queuedClipType.Name + " (" + queuedReadyRack + " + " + queuedStorage + ")\n");
+                    __instance._sb.Append("\nNext: " + queuedClipType.Name + " (" + queuedReadyRack + " + " + queuedStorage + ")");
                 }
                 if (feed.Reloading)
                 {
@@ -161,7 +161,11 @@ namespace AmmoDisplayMod
             if(AarController.InAar) return;
             if (__instance._loadoutManager != null && __instance._loadoutManager.Weapon == weaponsModule.ActiveWeapon.Weapon && !__instance.CurrentPlayerUnit.Neutralized && weaponsModule.ActiveWeapon.Weapon.CurrentClipRemainingCount == 0 && !weaponsModule.ActiveWeapon.Weapon.Feed.Reloading && !__instance._loadoutManager.IsRestocking)
             {
-                if (weaponsModule.ActiveWeapon.Weapon.Feed.ReadyToReload)
+                if (__instance._loadoutManager.AllRacksEmpty)
+                {
+                    __instance.VehicleHudText.AddAlertMessage("No ammunition remaining", 0.1f);
+                }
+                else if (weaponsModule.ActiveWeapon.Weapon.Feed.ReadyToReload)
                 {
                     int ammoCountsLength = __instance._loadoutManager.TotalAmmoCounts.Length;
                     string[] ammoNames = new string[ammoCountsLength];
@@ -199,10 +203,7 @@ namespace AmmoDisplayMod
                         sb.AppendLine(string.Format("{0}: {1} + {2}\n", ammoNames[i], readyRackCounts[i], totalCounts[i]));
                     __instance.VehicleHudText.AddAlertMessage(sb.ToString(), 0.1f);
                 }
-                else if (!__instance._loadoutManager.AllRacksEmpty)
-                {
-                    __instance.VehicleHudText.AddAlertMessage("No ammunition available", 0.1f);
-                }
+                 
             }
         }
     }
